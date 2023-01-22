@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>WP Exam</title>
+</head>
+<body>
+
+<div>
+    <!-- The form below should invoke the method NewsController.showNews -->
+    <form id="filter-form">
+        <label for="price">Price</label>
+        <input name="price" id="price" type="number"/>
+        <label for="type">Type</label>
+        <select id="type" name="type">
+            <option value="">All</option>
+            <!-- For each type you should have one <option> like below  -->
+            <th:block th:each="type:${types}">
+                <option th:value="${type.name()}" th:text="${type.name()}"> [type]</option>
+            </th:block>
+        </select>
+        <button id="filter" type="submit">Filter</button>
+    </form>
+    <div>
+        <!-- NewsController.showAdd -->
+        <a sec:authorize="hasRole('ADMIN')" href="/news/add" class="add-item">
+            Add news
+        </a>
+    </div>
+    <table>
+        <tr>
+            <th>Match name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Likes</th>
+            <th>Actions</th>
+        </tr>
+        <!-- For each news you should have one <tr> like below -->
+        <th:block th:each="story:${news}">
+            <tr class="item">
+                <td th:text="${story.getName()}">[news.name]</td>
+                <td th:text="${story.getDescription()}">[news.description]</td>
+                <td th:text="${story.getPrice()}">[news.price]</td>
+                <td th:text="${story.getType()}">[news.type]</td>
+                <td th:text="${story.getCategory().getName()}">[news.category]</td>
+                <td th:text="${story.getLikes()}"> [news.likes]</td>
+                <td>
+                    <!-- NewsController.delete -->
+                    <form sec:authorize="hasRole('ADMIN')" METHOD = "POST" th:action="@{'/news/{id}/delete' (id=${story.getId()})}">
+                        <button type="submit" class="delete-item">Delete</button>
+                    </form>
+                    <!-- NewsController.showEdit -->
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{'/news/{id}/edit' (id=${story.getId()})}" class="edit-item">Edit</a>
+                    <!-- NewsController.follow -->
+                    <form sec:authorize="hasRole('USER')" METHOD = "POST" th:action="@{'/news/{id}/like' (id=${story.getId()})}">
+                        <button type="submit" class="like-item">Like</button>
+                    </form>
+                </td>
+            </tr>
+        </th:block>
+    </table>
+
+</div>
+<div>
+    <ul id="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+</body>
+</html>
